@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Revolution\Google\Sheets\Sheets;
+use App\Http\Controllers\Charts;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -17,9 +17,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::middleware(['auth:sanctum', 'verified'])->get('/rawtable', function () {
+Route::get('/rawtable', function () {
     return view('rawtable');
 })->name('rawtable');
+Route::get('/dailygraph', [Charts::class, 'daily'])->name('dailygraph');
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
     return view('dashboard');
