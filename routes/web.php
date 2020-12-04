@@ -13,9 +13,7 @@ use App\Http\Controllers\Charts;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [Charts::class, 'daily'])->name('dailygraph');
 
 Route::get('/rawtable', function () {
     return view('rawtable');
