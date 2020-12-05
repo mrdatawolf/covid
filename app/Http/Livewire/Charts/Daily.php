@@ -1,5 +1,6 @@
 <?php namespace App\Http\Livewire\Charts;
 
+use App\Models\Location;
 use Livewire\Component;
 use App\Models\CountDaily;
 use Carbon\Carbon;
@@ -10,6 +11,8 @@ class Daily extends Component
     public $count;
     public $fromDate;
     public $toDate;
+    public $location;
+    public $locationType;
     public $types    = ['count'];
     public $colors   = ['average' => '#66DA26', 'sum' => '#fc8181', 'count' => '#f6ad55', 'amount' => '#cbd5e0'];
     public $firstRun = true;
@@ -20,24 +23,38 @@ class Daily extends Component
         'onColumnClick' => 'handleOnColumnClick',
     ];
 
+
     public function mount()
     {
-        $this->count  = CountDaily::orderBy('id')->get();
-        $this->fromDate          = Carbon::now()->subMonths(3)->startOfMonth()->toDateString();
-        $this->toDate            = Carbon::now()->toDateString();
+        $location           = (\Auth::check()) ? \Auth::user()->location()->first() : Location::find(1);
+        $this->location     = $location->title;
+        $this->locationType = $location->state;
+
+        $this->count    = CountDaily::orderBy('id')->get();
+        $this->fromDate = Carbon::now()->subMonths(3)->startOfMonth()->toDateString();
+        $this->toDate   = Carbon::now()->toDateString();
     }
+
+
     public function render()
     {
-        $fromDate = Carbon::createFromDate($this->fromDate)->startOfDay();
-        $toDate = Carbon::createFromDate($this->toDate)->endOfDay();
-        $countAll  = CountDaily::orderBy('created_at')->get();
-        $countDateLimited  = CountDaily::orderBy('created_at')->whereBetween('created_at', [$fromDate, $toDate])->get();
-        $lineChartModelCountAll   = $this->makeLineChartModel('count', $countAll, 'All data');
-        $lineChartModelCountLimited   = $this->makeLineChartModel('count', $countDateLimited, 'Limited data (From ' . $this->fromDate . ' To ' . $this->toDate . ')');
-        $this->firstRun = false;
+        $fromDate                   = Carbon::createFromDate($this->fromDate)->startOfDay();
+        $toDate                     = Carbon::createFromDate($this->toDate)->endOfDay();
+        $countAll                   = CountDaily::orderBy('created_at')->get();
+        $countDateLimited           = CountDaily::orderBy('created_at')
+                                                ->whereBetween('created_at', [$fromDate, $toDate])
+                                                ->get();
+        $lineChartModelCountAll     = $this->makeLineChartModel('count', $countAll, 'All data for ' . $this->location . ' ' . ucfirst($this->locationType));
+        $lineChartModelCountLimited = $this->makeLineChartModel('count', $countDateLimited,
+            'Limited data (From '.$this->fromDate.' To '.$this->toDate.') for ' . $this->location . ' ' . ucfirst($this->locationType));
+        $this->firstRun             = false;
 
-        return view('livewire.charts.daily')->with(['lineChartModelCountLimited' => $lineChartModelCountLimited, 'lineChartModelCountAll' => $lineChartModelCountAll]);
+        return view('livewire.charts.daily')->with([
+            'lineChartModelCountLimited' => $lineChartModelCountLimited,
+            'lineChartModelCountAll'     => $lineChartModelCountAll
+        ]);
     }
+
 
     private function makeLineChartModel($type, $count, $title = '')
     {
@@ -45,11 +62,13 @@ class Daily extends Component
             $count,
             $type
         ) {
-            $index   = $data->created_at->toDateString();
+            $index = $data->created_at->toDateString();
 
             $dailyCount = (int)$data->count;
 
             return $lineChartModel->addPoint($index, $dailyCount, ['id' => $index]);
-        }, (new LineChartModel())->setTitle($title)->setAnimated($this->firstRun)->withOnPointClickEvent('onPointClick')) : null;
+        }, (new LineChartModel())->setTitle($title)
+                                 ->setAnimated($this->firstRun)
+                                 ->withOnPointClickEvent('onPointClick')) : null;
     }
 }

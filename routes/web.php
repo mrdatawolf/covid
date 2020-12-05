@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Charts;
+use App\Http\Controllers\CountDailyController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -23,3 +24,5 @@ Route::get('/dailygraph', [Charts::class, 'daily'])->name('dailygraph');
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
     return view('dashboard');
 })->name('dashboard');
+
+Route::middleware(['auth:sanctum', 'verified'])->resource('countdaily', CountDailyController::class);

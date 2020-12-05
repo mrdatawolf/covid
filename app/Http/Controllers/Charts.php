@@ -1,11 +1,17 @@
 <?php namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Location;
+
 
 class Charts extends Controller
 {
     public function daily() {
-        $layout = (\Auth::check()) ? 'layouts.app' : 'layouts.guest';
+
+        if(\Auth::check()) {
+            $layout =  'layouts.app';
+        } else {
+            $layout = 'layouts.guest';
+        }
 
         return view('charts.all', compact('layout'));
     }

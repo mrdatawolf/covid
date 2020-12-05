@@ -8,6 +8,14 @@ use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Jetstream\HasTeams;
 use Laravel\Sanctum\HasApiTokens;
 
+/*
+ * Class User
+ *
+ * @property  string $name
+ * @property  string $email
+ * @property         $location
+ * @package App
+ */
 class User extends Authenticatable
 {
     use HasApiTokens;
@@ -23,7 +31,9 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name',
+        'email',
+        'password',
     ];
 
     /**
@@ -55,4 +65,10 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+
+    public function location(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo('App\Models\Location');
+    }
 }
