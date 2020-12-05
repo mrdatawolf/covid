@@ -5,7 +5,8 @@
         </x-slot>
 
         <x-jet-validation-errors class="mb-4" />
-
+<?php
+/*
         <form method="POST" action="{{ route('register') }}">
             @csrf
 
@@ -39,5 +40,7 @@
                 </x-jet-button>
             </div>
         </form>
+*/
+?>
     </x-jet-authentication-card>
 </x-guest-layout>
