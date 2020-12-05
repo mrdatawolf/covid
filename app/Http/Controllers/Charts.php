@@ -5,6 +5,8 @@ use Illuminate\Http\Request;
 class Charts extends Controller
 {
     public function daily() {
-        return view('charts.all');
+        $layout = (\Auth::check()) ? 'layouts.app' : 'layouts.guest';
+
+        return view('charts.all', compact('layout'));
     }
 }
