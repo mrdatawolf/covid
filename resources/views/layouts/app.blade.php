@@ -26,7 +26,9 @@
             text-align: center;
         }
     </style>
+    <link rel="stylesheet" type="text/css" href="/css/pikaday.css">
     @livewireStyles
+
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.7.0/dist/alpine.js" defer></script>
@@ -40,6 +42,7 @@
     </script>
     <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js"integrity="sha384-6OIrr52G08NpOFSZdxxz1xdNSndlD4vdcf/q2myIUVO0VsqaGHJsB0RaBE01VTOY" crossorigin="anonymous">
     </script>
+    <script src="/js/pikaday.js"></script>
 </head>
 <body class="font-sans antialiased">
 <div class="min-h-screen bg-gray-100">
