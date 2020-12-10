@@ -22,9 +22,17 @@
                     <x-jet-nav-link href="{{ route('rawtable') }}" :active="request()->routeIs('rawtable')">
                         {{ __('Raw Table Data') }}
                     </x-jet-nav-link>
-                        <x-jet-nav-link href="{{ route('dailygraph') }}" :active="request()->routeIs('dailygraph')">
-                            {{ __('Per Day Graph') }}
+                    <x-jet-nav-link href="{{ route('dailygraph') }}" :active="request()->routeIs('dailygraph')">
+                        {{ __('Per Day Graph') }}
+                    </x-jet-nav-link>
+                    @if(Auth::check())
+                        <x-jet-nav-link href="{{ route('countdaily.index') }}" :active="request()->routeIs('countdaily.index')">
+                            {{ __('Work with records') }}
                         </x-jet-nav-link>
+                        <x-jet-nav-link href="{{ route('location.index') }}" :active="request()->routeIs('location.index')">
+                            {{ __('Work with locations') }}
+                        </x-jet-nav-link>
+                    @endif
                 </div>
             </div>
             <div class="hidden sm:flex sm:items-center sm:ml-6">

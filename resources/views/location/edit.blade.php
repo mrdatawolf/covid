@@ -22,17 +22,21 @@
             </ul>
         </div>
     @endif
-    <form action="{{ route('countdaily.update', $countDaily->id) }}" method="POST">
+    <form action="{{ route('location.update', $location->id) }}" method="POST">
         @csrf
         @method('PUT')
 
         <div class="row">
             <div class="col-xs-12 col-sm-12 col-md-12">
                 <div class="form-group">
-                    <strong>Count:</strong>
-                    <input type="text" name="count" value="{{ $countDaily->count }}" class="form-control" placeholder="Count">
-                    <strong>Date:</strong>
-                    <input type="text" name="created_at" value="{{ $countDaily->created_at }}" class="form-control" placeholder="Created At">
+                    <strong>Title:</strong>
+                    <input type="text" name="count" value="{{ $location->title }}" class="form-control" placeholder="Title">
+                    <strong>County:</strong>
+                    <input type="text" name="created_at" value="{{ $location->county }}" class="form-control" placeholder="County">
+                    <strong>State:</strong>
+                    <input type="text" name="created_at" value="{{ $location->state }}" class="form-control" placeholder="Statet">
+                    <strong>Country:</strong>
+                    <input type="text" name="created_at" value="{{ $location->country }}" class="form-control" placeholder="Country">
                 </div>
             </div>
             <div class="col-xs-12 col-sm-12 col-md-12 text-center">
