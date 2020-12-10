@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Charts;
 use App\Http\Controllers\CountDailyController;
+use \App\Http\Controllers\LocationController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -26,3 +27,4 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
 })->name('dashboard');
 
 Route::middleware(['auth:sanctum', 'verified'])->resource('countdaily', CountDailyController::class);
+Route::middleware(['auth:sanctum', 'verified'])->resource('location', LocationController::class);
