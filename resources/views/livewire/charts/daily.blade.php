@@ -21,7 +21,7 @@
             @livewire('charts.tuesday-average')
         </li>
         <li>
-            @livewire('charts.extrapolate-out')
+            <!--@livewire('charts.extrapolate-out')-->
         </li>
     </ul>
     @if(! empty($lineChartModelCountLimited))
