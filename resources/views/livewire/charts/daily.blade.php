@@ -21,6 +21,9 @@
             @livewire('charts.tuesday-average')
         </li>
         <li>
+            @livewire('charts.number-state-uses')
+        </li>
+        <li>
             <!--@livewire('charts.extrapolate-out')-->
         </li>
     </ul>
