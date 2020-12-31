@@ -21,7 +21,7 @@
             @livewire('charts.seven-day-average')
         </li>
         <li>
-            @livewire('charts.tuesday-average')
+            @livewire('charts.number-county-uses')
         </li>
         <li>
             @livewire('charts.number-state-uses')
