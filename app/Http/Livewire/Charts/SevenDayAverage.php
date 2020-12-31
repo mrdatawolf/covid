@@ -21,7 +21,7 @@ class SevenDayAverage extends Component
         $countAll               = CountDaily::orderBy('created_at')->get();
         $latestActiveDate       = $countAll->last()->created_at;
         $lastActive             = $latestActiveDate->setTimezone('America/Los_Angeles');
-        $this->sevenDaysEndDate = $lastActive->toDateString();
+        $this->updatedToDate($lastActive->toDateString());
     }
 
 

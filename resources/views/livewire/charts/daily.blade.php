@@ -7,13 +7,16 @@
     </style>
     <ul class="flex flex-col sm:flex-row sm:space-x-8 sm:items-center">
         <li>
-            <label for="from-date" class="block text-gray-500 font-bold md:text-left mb-1 md:mb-0 pr-4" for="select-ship-size">From:</label>
-            <input type="text"  onChange="changeFromDate(this.value)" wire:model="fromDate" id="from-date" class="bg-gray-200 appearance-none border-2 border-gray-200 rounded py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" readonly>
+            <label for="from-date" class="text-gray-500 font-bold md:text-left mb-1 md:mb-0 pr-4">From:</label>
+            <input type="text" onChange="changeFromDate(this.value)" wire:model="fromDate" id="from-date" class="bg-gray-200 appearance-none border-2 border-gray-200 rounded py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" readonly>
         </li>
         <li>
-            <label for="to-date" class="block text-gray-500 font-bold md:text-left mb-1 md:mb-0 pr-4" for="select-ship-size">To:</label>
+            <label for="to-date" class="text-gray-500 font-bold md:text-left mb-1 md:mb-0 pr-4">To:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
             <input type="text" onChange="changeToDate(this.value)" wire:model="toDate" id="to-date" class="bg-gray-200 appearance-none border-2 border-gray-200 rounded py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" readonly>
         </li>
+    </ul>
+    <hr>
+    <ul class="flex flex-col sm:flex-row sm:space-x-8 sm:items-center">
         <li>
             @livewire('charts.seven-day-average')
         </li>
@@ -23,10 +26,13 @@
         <li>
             @livewire('charts.number-state-uses')
         </li>
+    </ul>
+    <ul class="flex flex-col sm:flex-row sm:space-x-8 sm:items-center">
         <li>
-            <!--@livewire('charts.extrapolate-out')-->
+        <!--@livewire('charts.extrapolate-out')-->
         </li>
     </ul>
+    <hr>
     @if(! empty($lineChartModelCountLimited))
         <div class="card">
             <div class="card-body">

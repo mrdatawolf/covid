@@ -6,10 +6,10 @@ use App\Models\CountDaily;
 use Carbon\Carbon;
 use Livewire\Component;
 
-class TuesdayAverage extends Component
+class NumberCountyUses extends Component
 {
-    public  $tuesdayCount;
-    public  $tuesdayDate;
+    public $countyCount;
+    public $countyDate;
 
     protected $listeners = [
         'updatedToDate',
@@ -24,7 +24,7 @@ class TuesdayAverage extends Component
     public function render()
     {
         $this->getAverageCountForTuesday();
-        return view('livewire.charts.tuesday-average');
+        return view('livewire.charts.number-county-uses');
     }
 
 
@@ -38,20 +38,20 @@ class TuesdayAverage extends Component
         $rawToDate = (is_object($toDate)) ? $toDate :
             Carbon::createFromFormat('Y-m-d', $toDate)->setTimezone('America/Los_Angeles')->endOfDay()->setTimezone('America/Los_Angeles');
         $tuesday    = $rawToDate->copy()->subDays(7)->startOfWeek(Carbon::TUESDAY);
-        $this->tuesdayDate = $tuesday->toDateString();
+        $this->countyDate = $tuesday->toDateString();
     }
 
 
     private function getAverageCountForTuesday($daysBack = 7)
     {
         $currentTime = Carbon::now()->toTimeString();
-        $rawToEnd    = Carbon::createFromFormat('Y-m-d H:i:s', $this->tuesdayDate.' '.$currentTime)
+        $rawToEnd    = Carbon::createFromFormat('Y-m-d H:i:s', $this->countyDate.' '.$currentTime)
                              ->setTimezone('America/Los_Angeles');
         $newestDate  = $rawToEnd->copy()->endOfDay();
         $oldiestDate = $rawToEnd->copy()->subDays($daysBack)->startOfDay();
         $totalCounts = CountDaily::orderBy('created_at')
                                  ->where('created_at', '>=', $oldiestDate)
                                  ->where('created_at', '<=', $newestDate);
-        $this->tuesdayCount = ceil($totalCounts->sum('count') / $daysBack);
+        $this->countyCount = ceil($totalCounts->sum('count') / $daysBack);
     }
 }

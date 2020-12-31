@@ -139,15 +139,21 @@
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
             @if(Auth::check())
-            <x-jet-responsive-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
-            </x-jet-responsive-nav-link>
+                <x-jet-nav-link href="{{ route('countdaily.index') }}" :active="request()->routeIs('countdaily.index')">
+                    {{ __('Work with records') }}
+                </x-jet-nav-link>
+                <x-jet-nav-link href="{{ route('location.index') }}" :active="request()->routeIs('location.index')">
+                    {{ __('Work with locations') }}
+                </x-jet-nav-link>
             @endif
-            <x-jet-responsive-nav-link href="{{ route('rawtable') }}" :active="request()->routeIs('rawtable')">
-                {{ __('Raw Table') }}
-            </x-jet-responsive-nav-link>
+            <x-jet-nav-link href="{{ route('rawtable') }}" :active="request()->routeIs('rawtable')">
+                {{ __('Raw Table Data') }}
+            </x-jet-nav-link>
+            <x-jet-nav-link href="{{ route('dailygraph') }}" :active="request()->routeIs('dailygraph')">
+                {{ __('Per Day Graph') }}
+            </x-jet-nav-link>
         </div>
-@if(Auth::check())
+        @if(Auth::check())
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-gray-200">
             <div class="flex items-center px-4">
@@ -214,6 +220,10 @@
                 @endif
             </div>
         </div>
-@endif
+        @else
+            <x-jet-dropdown-link href="{{ route('login') }}">
+                {{ __('Login') }}
+            </x-jet-dropdown-link>
+        @endif
     </div>
 </nav>
