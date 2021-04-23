@@ -36,59 +36,27 @@
     @if(! empty($lineChartModelCountLimited))
         <div class="card">
             <div class="card-body">
-                @if($lineChartModelCountLimited->data->isEmpty())
+                @if(is_null($lineChartModelCountLimited))
                     <h4>No Data</h4>
                 @else
-                    <livewire:livewire-line-chart
-                        key="{{ $lineChartModelCountLimited->reactiveKey() }}"
-                        :line-chart-model="$lineChartModelCountLimited"
-                    />
+                    {!! $lineChartModelCountLimited->container() !!}
                 @endif
             </div>
         </div>
     @endif
+    <hr>
     @if(! empty($lineChartModelCountAll))
         <div class="card">
             <div class="card-body">
-                @if($lineChartModelCountAll->data->isEmpty())
+                @if(is_null($lineChartModelCountAll))
                     <h4>No Data</h4>
                 @else
-                    <livewire:livewire-line-chart
-                        key="{{ $lineChartModelCountAll->reactiveKey() }}"
-                        :line-chart-model="$lineChartModelCountAll"
-                    />
+                    {!! $lineChartModelCountAll->container() !!}
                 @endif
             </div>
         </div>
     @endif
-    @if(! empty($lineChartModelCount7))
-        <div class="card">
-            <div class="card-body">
-                @if($lineChartModelCount7->data->isEmpty())
-                    <h4>No Data</h4>
-                @else
-                    <livewire:livewire-line-chart
-                        key="{{ $lineChartModelCount7->reactiveKey() }}"
-                        :line-chart-model="$lineChartModelCountAll"
-                    />
-                @endif
-            </div>
-        </div>
-    @endif
-    @if(! empty($lineChartModelCount3))
-        <div class="card">
-            <div class="card-body">
-                @if($lineChartModelCount3->data->isEmpty())
-                    <h4>No Data</h4>
-                @else
-                    <livewire:livewire-line-chart
-                        key="{{ $lineChartModelCount3->reactiveKey() }}"
-                        :line-chart-model="$lineChartModelCountAll"
-                    />
-                @endif
-            </div>
-        </div>
-    @endif
+
     @section('scripts')
     <script>
         var pickerTo = new Pikaday({
@@ -138,5 +106,7 @@
             Livewire.emit('fromDateChanged', value);
         }
     </script>
+    {{ $lineChartModelCountLimited->script() }}
+    {{ $lineChartModelCountAll->script() }}
     @endsection
 </div>

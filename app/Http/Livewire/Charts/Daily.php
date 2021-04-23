@@ -4,7 +4,7 @@ use App\Models\Location;
 use Livewire\Component;
 use App\Models\CountDaily;
 use Carbon\Carbon;
-use Asantibanez\LivewireCharts\Models\LineChartModel;
+use ArielMejiaDev\LarapexCharts\LarapexChart;
 
 class Daily extends Component
 {
@@ -42,7 +42,6 @@ class Daily extends Component
         $this->location           = $location->title;
         $this->locationType       = $location->state;
         $this->countAll           = CountDaily::orderBy('created_at')->get();
-        $this->count              = CountDaily::orderBy('id')->get();
         $this->latestActiveDate   = $this->countAll->last()->created_at;
         $this->earliestActiveDate   = $this->countAll->first()->created_at;
         $this->updateRawTo();
@@ -123,86 +122,43 @@ class Daily extends Component
     {
         $this->makeLineChartCountAll();
         $this->makeLineChartCountLimited();
-        //$this->makeLineChartCount7();
-        //$this->makeLineChartCount3();
     }
 
 
     private function makeLineChartCountAll()
     {
-        $this->lineChartModelCountAll = $this->makeLineChartModel('count', $this->countAll,
-            'All data for '.$this->location.' '.ucfirst($this->locationType));
+        $chart = $this->makeLineChartModel('All data for '.$this->location.' '.ucfirst($this->locationType), true);
+
+        $this->lineChartModelCountAll = empty(json_decode($chart->dataset())[0]->data) ? null : $chart;
     }
 
 
     private function makeLineChartCountLimited()
     {
-        $countDateLimited = CountDaily::orderBy('created_at')
-                                      ->whereBetween('created_at', [$this->rawFrom, $this->rawTo])
-                                      ->get();
+        $chart = $this->makeLineChartModel('Limited data (From '.$this->fromDate.' To '.$this->toDate.') for '.$this->location.' '.ucfirst($this->locationType));
 
-        $this->lineChartModelCountLimited = $this->makeLineChartModel('count', $countDateLimited,
-            'Limited data (From '.$this->fromDate.' To '.$this->toDate.') for '.$this->location.' '.ucfirst($this->locationType));
+        $this->lineChartModelCountLimited = empty(json_decode($chart->dataset())[0]->data) ? null : $chart;
     }
 
 
-    private function makeLineChartCount3()
+    private function makeLineChartModel($title = '', $returnAll = false): ?\ArielMejiaDev\LarapexCharts\LineChart
     {
-        $countAllAveraged3 = $this->getAverageOverDays(3);
-
-        $this->lineChartModelCount3 = $this->makeLineChartModel('count', $countAllAveraged3,
-            'Averaged over 3 days data for '.$this->location.' '.ucfirst($this->locationType));
-    }
-
-
-    private function makeLineChartCount7()
-    {
-        $countAllAveraged7 = $this->getAverageOverDays(7);
-
-        $this->lineChartModelCount7 = $this->makeLineChartModel('count', $countAllAveraged7,
-            'Averaged over 7 days data for '.$this->location.' '.ucfirst($this->locationType));
-    }
-
-
-    private function makeLineChartModel($type, $count, $title = '')
-    {
-        return (in_array($type, $this->types)) ? $count->reduce(function (LineChartModel $lineChartModel, $data) use (
-            $count,
-            $type
-        ) {
-            $index = $data->created_at->timezone('America/Los_Angeles')->toDateString();
-
-            $dailyCount = (int)$data->count;
-
-            return $lineChartModel->addPoint($index, $dailyCount, ['id' => $index]);
-        }, (new LineChartModel())->setTitle($title)
-                                 ->setAnimated($this->firstRun)
-                                 ->withOnPointClickEvent('onPointClick')) : null;
-    }
-
-
-    /**
-     * @param $dayRange
-     *
-     * @return array
-     */
-    private function getAverageOverDays($dayRange): array
-    {
-        $averageCount = [];
-        foreach ($this->countAll as $key => $count) {
-            if ( ! empty($count->created_at)) {
-                $averageCount[$count->created_at->toDateString()] = $this->countAll->where('created_at', '>=',
-                    Carbon::createFromFormat('Y-m-d H:i:s', $count->created_at.''.$this->currentTime)
-                          ->subDays($dayRange)
-                          ->startOfDay())
-                                                                                   ->where('created_at', '<=',
-                                                                                       Carbon::createFromFormat('Y-m-d H:i:s',
-                                                                                           $count->created_at)
-                                                                                             ->endOfDay())
-                                                                                   ->average('count');
-            }
+        $daysFrom = $this->rawFrom->copy()->startOfDay()->timezone('UTC');
+        $daysTo = $this->rawTo->copy()->endOfDay()->timezone('UTC');
+        $query = ($returnAll) ? \App\Models\CountDaily::query() :  \App\Models\CountDaily::query()->whereBetween('created_at', [$daysFrom, $daysTo]);
+        $data = $query->pluck('count');
+        $dates = $query->pluck('created_at');
+        $labels = [];
+        foreach ($dates as $date) {
+            $labels[] = $date->format('M d');
         }
 
-        return $averageCount;
+        $chart = (new LarapexChart)->lineChart()
+                                   ->setTitle($title)
+                                   ->setHeight('300')
+                                   ->addLine('New cases', $data->toArray())
+                                   ->setLabels($labels);
+
+       return ($data->isEmpty()) ? null : $chart;
     }
 }

@@ -1,6 +1,5 @@
 @extends('layouts.app')
 @section('pageTitle', 'Charts')
-<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <style>
     .card {
         width: 20em;

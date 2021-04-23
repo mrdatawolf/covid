@@ -39,20 +39,15 @@ class SevenDayAverage extends Component
     }
 
 
-    /**
-     * @param int $daysBack
-     *
-     * @return false|float
-     */
-    private function getAverageCountOverDays($daysBack = 7)
+    private function getAverageCountOverDays(): float
     {
         $perHunderedThousandModifier = 1.36;
-        $rawToEnd    = Carbon::createFromFormat('Y-m-d H:i:s', $this->sevenDaysEndDate.' 23:59:59', 'America/Los_Angeles');
-        $newestDate  = $rawToEnd->copy()->timezone('UTC');
-        $oldiestDate = $rawToEnd->copy()->timezone('UTC')->subDays($daysBack)->startOfDay();
-        $totalCounts = CountDaily::orderBy('created_at')
+        $rawToEnd                    = Carbon::createFromFormat('Y-m-d H:i:s', $this->sevenDaysEndDate.' 23:59:59', 'America/Los_Angeles');
+        $newestDate                  = $rawToEnd->copy()->timezone('UTC');
+        $oldiestDate                 = $rawToEnd->copy()->timezone('UTC')->subDays(7)->startOfDay();
+        $totalCounts                 = CountDaily::orderBy('created_at')
                                  ->where('created_at', '>=', $oldiestDate)
                                  ->where('created_at', '<=', $newestDate);
-        return round(($totalCounts->sum('count') / $daysBack)/$perHunderedThousandModifier, 1);
+        return round(($totalCounts->sum('count') / 7)/$perHunderedThousandModifier, 1);
     }
 }
