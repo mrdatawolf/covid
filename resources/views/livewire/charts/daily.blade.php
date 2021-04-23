@@ -33,29 +33,35 @@
         </li>
     </ul>
     <hr>
-    @if(! empty($lineChartModelCountLimited))
-        <div class="card">
-            <div class="card-body">
-                @if(is_null($lineChartModelCountLimited))
-                    <h4>No Data</h4>
-                @else
-                    {!! $lineChartModelCountLimited->container() !!}
-                @endif
-            </div>
+    <div class="card">
+        <div class="card-body">
+            @if(is_null($lineChartModelCountLimited))
+                <h4>No Data</h4>
+            @else
+                {!! $lineChartModelCountLimited->container() !!}
+            @endif
         </div>
-    @endif
+    </div>
     <hr>
-    @if(! empty($lineChartModelCountAll))
-        <div class="card">
-            <div class="card-body">
-                @if(is_null($lineChartModelCountAll))
-                    <h4>No Data</h4>
-                @else
-                    {!! $lineChartModelCountAll->container() !!}
-                @endif
-            </div>
+    <div class="card">
+        <div class="card-body">
+            @if(is_null($lineChartModelCountMonthly))
+                <h4>No Data</h4>
+            @else
+                {!! $lineChartModelCountMonthly->container() !!}
+            @endif
         </div>
-    @endif
+    </div>
+    <hr>
+    <div class="card">
+        <div class="card-body">
+            @if(is_null($lineChartModelCountAll))
+                <h4>No Data</h4>
+            @else
+                {!! $lineChartModelCountAll->container() !!}
+            @endif
+        </div>
+    </div>
 
     @section('scripts')
     <script>
@@ -108,5 +114,6 @@
     </script>
     {{ $lineChartModelCountLimited->script() }}
     {{ $lineChartModelCountAll->script() }}
+    {{ $lineChartModelCountMonthly->script() }}
     @endsection
 </div>

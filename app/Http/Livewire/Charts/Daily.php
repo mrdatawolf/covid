@@ -5,6 +5,7 @@ use Livewire\Component;
 use App\Models\CountDaily;
 use Carbon\Carbon;
 use ArielMejiaDev\LarapexCharts\LarapexChart;
+use \DB;
 
 class Daily extends Component
 {
@@ -24,6 +25,7 @@ class Daily extends Component
     public  $firstRun = true;
     private $lineChartModelCountAll;
     private $lineChartModelCountLimited;
+    private $lineChartModelCountMonthly;
     private $lineChartModelCount7;
     private $lineChartModelCount3;
 
@@ -44,6 +46,8 @@ class Daily extends Component
         $this->countAll           = CountDaily::orderBy('created_at')->get();
         $this->latestActiveDate   = $this->countAll->last()->created_at;
         $this->earliestActiveDate   = $this->countAll->first()->created_at;
+        $this->lineChartModelCount7 = null;
+        $this->lineChartModelCount3 = null;
         $this->updateRawTo();
         $this->updateRawFrom();
     }
@@ -59,6 +63,7 @@ class Daily extends Component
             'lineChartModelCount3'       => $this->lineChartModelCount3,
             'lineChartModelCount7'       => $this->lineChartModelCount7,
             'lineChartModelCountAll'     => $this->lineChartModelCountAll,
+            'lineChartModelCountMonthly' => $this->lineChartModelCountMonthly,
         ]);
     }
 
@@ -111,7 +116,7 @@ class Daily extends Component
 
     private function updateRawFrom()
     {
-        $this->rawFrom            = (empty( $this->fromDate)) ? $this->rawTo->copy()->subMonths(3)->startOfMonth() :
+        $this->rawFrom            = (empty( $this->fromDate)) ? $this->rawTo->copy()->subMonths(1)->startOfMonth() :
             Carbon::createFromFormat('Y-m-d H:i:s', $this->fromDate.' '.$this->currentTime)
                   ->setTimezone('America/Los_Angeles')->startOfDay();
         $this->fromDate           = $this->rawFrom->copy()->toDateString();
@@ -122,6 +127,7 @@ class Daily extends Component
     {
         $this->makeLineChartCountAll();
         $this->makeLineChartCountLimited();
+        $this->makeLineChartCountMonthly();
     }
 
 
@@ -140,12 +146,19 @@ class Daily extends Component
         $this->lineChartModelCountLimited = empty(json_decode($chart->dataset())[0]->data) ? null : $chart;
     }
 
+    private function makeLineChartCountMonthly()
+    {
+        $chart = $this->makeLineChartModelForMonthAvg('Monthly AVG for '.$this->location.' '.ucfirst($this->locationType));
+
+        $this->lineChartModelCountMonthly = empty(json_decode($chart->dataset())[0]->data) ? null : $chart;
+    }
+
 
     private function makeLineChartModel($title = '', $returnAll = false): ?\ArielMejiaDev\LarapexCharts\LineChart
     {
         $daysFrom = $this->rawFrom->copy()->startOfDay()->timezone('UTC');
         $daysTo = $this->rawTo->copy()->endOfDay()->timezone('UTC');
-        $query = ($returnAll) ? \App\Models\CountDaily::query() :  \App\Models\CountDaily::query()->whereBetween('created_at', [$daysFrom, $daysTo]);
+        $query = ($returnAll) ? CountDaily::query() : CountDaily::query()->whereBetween('created_at', [$daysFrom, $daysTo]);
         $data = $query->pluck('count');
         $dates = $query->pluck('created_at');
         $labels = [];
@@ -160,5 +173,41 @@ class Daily extends Component
                                    ->setLabels($labels);
 
        return ($data->isEmpty()) ? null : $chart;
+    }
+
+    private function makeLineChartModelForMonthAvg($title): ?\ArielMejiaDev\LarapexCharts\LineChart
+    {
+        $data = [];
+        $query = CountDaily::get()->groupBy(function($val) {
+                           return Carbon::parse($val->created_at)->format('Ym');
+                       });
+        $labels = [];
+        $currentY = Carbon::parse($this->toDate)->format('Y');
+        $currentM = Carbon::parse($this->toDate)->format('m');
+        $currentD = Carbon::parse($this->toDate)->format('d');
+
+        foreach($query as $month) {
+           $monthCount = [];
+           foreach($month as $record) {
+               $y = $record->created_at->format('Y');
+               $m = $record->created_at->format('m');
+               $monthCount[] = $record->count;
+               $key = $y . " " . $m;
+               $daysInMonth = ($y === $currentY && $m === $currentM) ? $currentD : date("t", mktime(0, 0, 0, $m, 1, $y));
+               $data[$key] = (int) round(array_sum($monthCount)/$daysInMonth,0);
+               if(! in_array($key,$labels)) {
+                   $labels[] = $key;
+               }
+           }
+        }
+        $data = array_values($data);
+
+        $chart = (new LarapexChart)->lineChart()
+                                   ->setTitle($title)
+                                   ->setHeight('300')
+                                   ->addLine('Avg daily cases', $data)
+                                   ->setLabels($labels);
+
+        return (empty($data)) ? null : $chart;
     }
 }
